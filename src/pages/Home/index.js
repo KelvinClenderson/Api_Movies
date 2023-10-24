@@ -1,49 +1,49 @@
-import { Conteiner, MovieList, Movie } from "./styles";
+import { Container, MovieList, Movie } from "./styles";
 import { useState, useEffect } from "react";
-import { APIKey, TokenApi } from "../../config/key";
+import { Link } from "react-router-dom";
 
 function Home() {
     const [movies, setMovies] = useState([]);
-
     useEffect(() => {
-        //Consumir a Api...
-
+        // Consumir a API...
         const fetch = require("node-fetch");
         const url =
-            "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1";
+            "https://api.themoviedb.org/3/tv/popular?language=en-US&page=1";
         const options = {
             method: "GET",
             headers: {
                 accept: "application/json",
-                Authorization: { TokenApi },
+                Authorization:
+                    "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzYTRjMTBfMjNkNTA4NWZjNmY3N2VlY2VjODZhOGE0YiIsInN1YiI6IjY1MzJlNjY3ZDEzMzI0MDBlMjIxZjc0YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.LjNAWT9I3B3uR2FrEoPBN7NQSyiUEP0h0x6TXmdKkOY",
             },
         };
+
         fetch(url, options)
-            .then((res) => res.json())
-            .then((json) => setMovies(json))
-            .catch((err) => console.error("error:" + err));
-        // `https://api.themoviedb.org/3/movie/popular?language=pt-BR&page=1`
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data.results);
+                setMovies(data.results);
+            }); // Atualize o estado com os resultados da API
     }, []);
 
     return (
-        <Conteiner>
+        <Container>
             <h1>Movies</h1>
             <MovieList>
-                {movies.map((movies) => {
-                    return (
-                        <Movie key={movies.id}>
-                            <a href="https://www.google.com.br">
-                                <img
-                                    src={movies.image_Url}
-                                    alt={movies.title}
-                                />
-                            </a>
-                            <span>{movies.title}</span>
-                        </Movie>
-                    );
-                })}
+                {movies.map((movie) => (
+                    <Movie key={movie.id}>
+                        <Link to={`/Details/${movie.id}`}>
+                            <img
+                                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                alt={movie.title}
+                            />
+                        </Link>
+                        <span>{movie.name}</span>
+                    </Movie>
+                ))}
             </MovieList>
-        </Conteiner>
+        </Container>
     );
 }
+
 export default Home;
